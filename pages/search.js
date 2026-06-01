@@ -54,16 +54,29 @@ export async function getServerSideProps({ query }) {
   const maxPrice = query.maxPrice || '1000000';
   const roomsMin = query.roomsMin || '0';
   const bathsMin = query.bathsMin || '0';
-  const sort = query.sort || 'price-desc';
+  const sort = query.sort || 'popular';
   const areaMax = query.areaMax || '35000';
   const locationExternalIDs = query.locationExternalIDs || '5002';
-  const categoryExternalID = query.categoryExternalID || '4';
+  const categoryExternalID = query.categoryExternalID || 'apartments';
 
-  const data = await fetchApi(`${baseUrl}/properties/list?locationExternalIDs=${locationExternalIDs}&purpose=${purpose}&categoryExternalID=${categoryExternalID}&bathsMin=${bathsMin}&rentFrequency=${rentFrequency}&priceMin=${minPrice}&priceMax=${maxPrice}&roomsMin=${roomsMin}&sort=${sort}&areaMax=${areaMax}`);
+  const params = new URLSearchParams({
+    location_ids: locationExternalIDs,
+    purpose,
+    property_type: categoryExternalID,
+    price_min: minPrice,
+    price_max: maxPrice,
+    sort_order: sort,
+    area_max: areaMax,
+    ...(purpose === 'for-rent' && { rent_frequency: rentFrequency }),
+    ...(roomsMin !== '0' && { rooms: roomsMin }),
+    ...(bathsMin !== '0' && { baths: bathsMin }),
+  });
+
+  const data = await fetchApi(`${baseUrl}/search-property?${params.toString()}`);
 
   return {
     props: {
-      properties: data?.hits,
+      properties: data?.data?.properties || [],
     },
   };
 }

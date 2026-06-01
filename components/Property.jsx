@@ -9,7 +9,9 @@ import millify from 'millify';
 
 import DefaultImage from '../assets/images/house.jpg';
 
-const Property = ({ property: { coverPhoto, price, rentFrequency, rooms, title, baths, area, agency, isVerified, externalID  } }) => (
+const Property = ({ property: { coverPhoto, price, rentFrequency, rooms, title, baths, area, agency, isVerified, externalID  } }) => {
+  const titleText = title?.en || title || '';
+  return (
   <Link href={`/property/${externalID}`} passHref>
     <Flex flexWrap='wrap' w='420px' p='5' paddingTop='0px' justifyContent='flex-start' cursor='pointer' >
       <Box>
@@ -27,14 +29,15 @@ const Property = ({ property: { coverPhoto, price, rentFrequency, rooms, title, 
         </Flex>
         <Flex alignItems='center' p='1' justifyContent='space-between' w='250px' color='blue.400'>
           {rooms}
-          <FaBed /> | {baths} <FaBath /> | {millify(area)} sqft <BsGridFill />
+          <FaBed /> | {baths} <FaBath /> | {area ? millify(area) : 'N/A'} sqft <BsGridFill />
         </Flex>
         <Text fontSize='lg'>
-          {title.length > 30 ? title.substring(0, 30) + '...' : title}
+          {titleText.length > 30 ? titleText.substring(0, 30) + '...' : titleText}
         </Text>
       </Box>
     </Flex>
   </Link>
-);
+  );
+};
 
 export default Property;

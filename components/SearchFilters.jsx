@@ -35,7 +35,7 @@ export default function SearchFilters() {
     if (searchTerm !== '') {
       const fetchData = async () => {
         setLoading(true);
-        const data = await fetchApi(`${baseUrl}/auto-complete?query=${searchTerm}`);
+        const data = await fetchApi(`${baseUrl}/autocomplete?query=${searchTerm}`);
         setLoading(false);
         setLocationData(data?.hits);
       };
