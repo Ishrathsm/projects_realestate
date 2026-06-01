@@ -52,13 +52,13 @@ const Home = ({ propertiesForSale, propertiesForRent }) => (
 );
 
 export async function getStaticProps() {
-  const propertyForSale = await fetchApi(`${baseUrl}/properties/list?locationExternalIDs=5002&purpose=for-sale&hitsPerPage=6`);
-  const propertyForRent = await fetchApi(`${baseUrl}/properties/list?locationExternalIDs=5002&purpose=for-rent&hitsPerPage=6`);
+  const propertyForSale = await fetchApi(`${baseUrl}/search-property?location_ids=5002&purpose=for-sale`);
+  const propertyForRent = await fetchApi(`${baseUrl}/search-property?location_ids=5002&purpose=for-rent`);
 
   return {
     props: {
-      propertiesForSale: propertyForSale?.hits,
-      propertiesForRent: propertyForRent?.hits,
+      propertiesForSale: propertyForSale?.data?.properties || [],
+      propertiesForRent: propertyForRent?.data?.properties || [],
     },
   };
 }

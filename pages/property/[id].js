@@ -8,7 +8,10 @@ import millify from 'millify';
 import { baseUrl, fetchApi } from '../../utils/fetchApi';
 import ImageScrollbar from '../../components/ImageScrollbar';
 
-const PropertyDetails = ({ propertyDetails: { price, rentFrequency, rooms, title, baths, area, agency, isVerified, description, type, purpose, furnishingStatus, amenities, photos } }) => (
+const PropertyDetails = ({ propertyDetails: { price, rentFrequency, rooms, title, baths, area, agency, isVerified, description, type, purpose, furnishingStatus, amenities, photos } }) => {
+  const titleText = title?.en || title || '';
+  const descText = description?.en || description || '';
+  return (
   <Box maxWidth='1000px' margin='auto' p='4'>
     {photos && <ImageScrollbar data={photos} />}
     <Box w='full' p='6'>
@@ -21,12 +24,12 @@ const PropertyDetails = ({ propertyDetails: { price, rentFrequency, rooms, title
         <Avatar size='sm' src={agency?.logo?.url}></Avatar>
       </Flex>
       <Flex alignItems='center' p='1' justifyContent='space-between' w='250px' color='blue.400'>
-        {rooms}<FaBed /> | {baths} <FaBath /> | {millify(area)} sqft <BsGridFill />
+        {rooms}<FaBed /> | {baths} <FaBath /> | {area ? millify(area) : 'N/A'} sqft <BsGridFill />
       </Flex>
     </Box>
     <Box marginTop='2'>
-      <Text fontSize='lg' marginBottom='2' fontWeight='bold'>{title}</Text>
-      <Text lineHeight='2' color='gray.600'>{description}</Text>
+      <Text fontSize='lg' marginBottom='2' fontWeight='bold'>{titleText}</Text>
+      <Text lineHeight='2' color='gray.600'>{descText}</Text>
     </Box>
     <Flex flexWrap='wrap' textTransform='uppercase' justifyContent='space-between'>
       <Flex justifyContent='space-between' w='400px' borderBottom='1px' borderColor='gray.100' p='3'>
@@ -45,7 +48,7 @@ const PropertyDetails = ({ propertyDetails: { price, rentFrequency, rooms, title
       )}
     </Flex>
     <Box>
-      {amenities.length && <Text fontSize='2xl' fontWeight='black' marginTop='5'>Facilites:</Text>}
+      {amenities?.length > 0 && <Text fontSize='2xl' fontWeight='black' marginTop='5'>Facilites:</Text>}
         <Flex flexWrap='wrap'>
           {amenities?.map((item) => (
               item?.amenities?.map((amenity) => (
@@ -57,16 +60,18 @@ const PropertyDetails = ({ propertyDetails: { price, rentFrequency, rooms, title
         </Flex>
     </Box>
   </Box>
-);
+  );
+};
 
 export default PropertyDetails;
 
 export async function getServerSideProps({ params: { id } }) {
-  const data = await fetchApi(`${baseUrl}/properties/detail?externalID=${id}`);
-  
+  const data = await fetchApi(`${baseUrl}/property-details?external_id=${id}&langs=en`);
+  if (data?.data?.photos?.length) console.log('First photo object:', JSON.stringify(data.data.photos[0]));
+
   return {
     props: {
-      propertyDetails: data,
+      propertyDetails: data?.data || data,
     },
   };
 }

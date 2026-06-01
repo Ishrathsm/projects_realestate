@@ -38,11 +38,16 @@ const RightArrow = () => {
 export default function ImageSrollbar({ data }) {
   return (
     <ScrollMenu LeftArrow={LeftArrow} RightArrow={RightArrow} style={{ overflow: 'hidden' }} >
-      {data.map((item) => (
-        <Box width='910px' itemId={item.id} overflow='hidden' p='1'>
-          <Image placeholder="blur" blurDataURL={item.url} src={item.url} width={1000} height={500}  sizes="(max-width: 500px) 100px, (max-width: 1023px) 400px, 1000px" />
-        </Box>
-      ))}
+      {data.map((item, index) => {
+        const src = item.url || item.main || item.imageURL || item.thumbnail || item.large ||
+          (item.id ? `https://images.bayut.com/thumbnails/${item.id}-800x600.jpeg` : null);
+        if (!src) return null;
+        return (
+          <Box width='910px' itemId={String(item.id || index)} overflow='hidden' p='1' key={item.id || index}>
+            <Image placeholder="blur" blurDataURL={src} src={src} width={1000} height={500} sizes="(max-width: 500px) 100px, (max-width: 1023px) 400px, 1000px" />
+          </Box>
+        );
+      })}
     </ScrollMenu>
   );
 }
